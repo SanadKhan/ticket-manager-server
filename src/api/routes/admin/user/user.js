@@ -6,11 +6,7 @@ import logger from "../../../../loaders/logger";
 const router = new Router();
 import { auth, fileUploads, requestValidator } from '../../../middlewares';
 
-router.get('/demo', async (req,res) => {
-    res.send("Response from Demo");
-});
-
-router.get('', auth, async (req,res) => {
+router.get('', async (req,res) => {
     try {
         const page = parseInt(req.query.p) || 1
         const perPage = parseInt (req.query.r) || 10
@@ -27,9 +23,6 @@ const userRegisterValidation = Joi.object({
     name: Joi.string().min(3).required().trim(),
     email: Joi.string().email({ minDomainSegments:2, tlds: {allow: ['com','in']}}).required().trim(),
     password: Joi.string().min(6).max(16).required().trim(),
-    mobile: Joi.string().regex(/^[0-9]{10}$/)
-    .messages({'string.pattern.base': `Phone number must have 10 digits.`}),
-    role_id: Joi.string().required(),
     id: Joi.string()
 });
 
@@ -38,7 +31,7 @@ router.post('/create', requestValidator(userRegisterValidation), async (req, res
         const { status, ...data} = await userService.create(req.values);
         res.status(status).send(data);
     } catch (error) {
-        logger('ADMIN_USER-READALL-CONTROLLER').error(error);
+        logger('ADMIN_USER-CREATE-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }
