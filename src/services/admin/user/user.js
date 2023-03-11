@@ -43,7 +43,6 @@ export const login = async(values) => {
 export const read = async({page, perPage, whereClause={}}) => {
     try {
         const user = await User.find(whereClause)
-        .populate({ path: "role_id", select: ['role_name']})
         .sort({ _id: -1 }).skip(((perPage * page) - perPage))
         .limit(perPage);
         if(!user.length > 0) {

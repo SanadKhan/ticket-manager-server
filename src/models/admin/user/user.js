@@ -10,9 +10,6 @@ const userSchema = new Schema({
         trim: true,
         minlength: 3
     },
-    mobile: {
-        type: String
-    },
     email: {
         type: String,
         required: true,
@@ -25,11 +22,6 @@ const userSchema = new Schema({
         required: true,
         trim: true,
         minlength: 6
-    },
-    role_id: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'Role'
     },
     tokens: [{
         token: {
