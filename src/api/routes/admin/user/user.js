@@ -39,7 +39,7 @@ router.post('/create', requestValidator(userRegisterValidation), async (req, res
 
 const userLoginValidation = Joi.object({
     email: Joi.string().email({ minDomainSegments:2, tlds: {allow: ['com','in']}}).required().trim(),
-    password: Joi.string().min(6).max(16).required().trim()
+    password: Joi.string().required().trim()
 });
 
 router.post('/login', requestValidator(userLoginValidation),async (req, res) => {

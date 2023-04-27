@@ -24,7 +24,7 @@ export const create = async(values) => {
 export const login = async(values) => {
     try {
         const user = await User.findOne({email: values.email})
-        .populate({ path: 'role_id', select: ['role_name']});
+        // .populate({ path: 'role_id', select: ['role_name']});
         if(!user) {
             return { status: 401 , msgText: "Wrong credentials, unable to login!" ,success: false }
         }
