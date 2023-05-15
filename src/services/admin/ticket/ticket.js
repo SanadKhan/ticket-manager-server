@@ -12,12 +12,24 @@ export const create = async(values) => {
     }
 };
 
-export const read = async({page, perPage, whereClause={}}) => {
+export const readAll = async({page, perPage, whereClause={}}) => {
     try {
         const ticket = await Ticket.find(whereClause)
         .sort({ _id: -1 }).skip(((perPage * page) - perPage))
         .limit(perPage);
         if(!ticket.length > 0) {
+            return { status: 404 , msgText: "Ticket does not exists!" ,success: false }
+        }
+        return { status: 200, success: true, ticket}
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const read = async(id) => {
+    try {
+        const ticket = await Ticket.findById(id)
+        if(!ticket) {
             return { status: 404 , msgText: "Ticket does not exists!" ,success: false }
         }
         return { status: 200, success: true, ticket}

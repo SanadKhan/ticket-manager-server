@@ -40,13 +40,23 @@ export const login = async(values) => {
     }
 };
 
-export const read = async({page, perPage, whereClause={}}) => {
+export const readAll = async(whereClause={}) => {
     try {
-        const user = await User.find(whereClause)
-        .sort({ _id: -1 }).skip(((perPage * page) - perPage))
-        .limit(perPage);
+        const user = await User.find(whereClause).sort( { _id: -1 })
         if(!user.length > 0) {
             return { status: 404 , msgText: "User does not exists!" ,success: false }
+        }
+        return { status: 200, success: true, user}
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const read = async(id) => {
+    try {
+        const user = await User.findById(id)
+        if(!user) {
+            return { status: 404 , msgText: "User does not exists!", success: false }
         }
         return { status: 200, success: true, user}
     } catch (error) {

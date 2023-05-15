@@ -5,5 +5,8 @@ export default {
     isProduction: process.env.NODE_ENV == 'production',
     clientbaseUrl: 'http://localhost:8080',
     databaseUrl : process.env.MONGODB_URL,
-    JWT: process.env.JWT_SECRET
+    JWT: process.env.JWT_SECRET,
+    IK_PUBK: process.env.IMAGEKIT_PUBLIC_KEY,
+    IK_PRIK: process.env.IMAGEKIT_PRIVATE_KEY,
+    IK_URLEND: process.env.IMAGEKIT_ENDPOINT_URL
 };

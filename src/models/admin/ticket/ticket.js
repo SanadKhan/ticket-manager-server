@@ -20,12 +20,12 @@ const ticketSchema = Schema({
         required: true,
         ref: 'User'
     },
-    assignedto: {
+    assigned_to: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },
-    files: [{
+    ticket_files: [{
         _id: false,
         fileId: String,
         url: String

@@ -8,9 +8,7 @@ import { auth, fileUploads, requestValidator } from '../../../middlewares';
 
 router.get('', async (req,res) => {
     try {
-        const page = parseInt(req.query.p) || 1
-        const perPage = parseInt (req.query.r) || 10
-        const { status, ...data} = await userService.read({ page, perPage })
+        const { status, ...data} = await userService.readAll()
         res.status(status).send(data);
     } catch (error) {
         logger('ADMIN_USER-READALL-CONTROLLER').error(error);
