@@ -46,11 +46,11 @@ export const read = async (id) => {
 
 export const update = async (id, values) => {
     try {
-        const ticket = await Ticket.findByIdAndUpdate(id, values);
+        const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
-        return { status: 200, msgText: 'Updated Successfully! ', success: true }
+        return { status: 200, msgText: 'Updated Successfully! ', success: true, ticket }
     } catch (error) {
         throw error;
     }
@@ -58,8 +58,8 @@ export const update = async (id, values) => {
 
 export const remove = async (id) => {
     try {
-        await Ticket.findByIdAndDelete(id)
-        return { status: 200, msgText: 'Deleted Successfully!', success: true }
+        const ticket = await Ticket.findByIdAndDelete(id)
+        return { status: 200, msgText: 'Deleted Successfully!', success: true, ticket }
     } catch (error) {
         throw error;
     }

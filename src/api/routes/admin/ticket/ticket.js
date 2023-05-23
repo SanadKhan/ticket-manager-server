@@ -116,7 +116,7 @@ router.post('/updateTicketStatus/:id', auth, requestValidator(ticketStatusValida
 
 router.post('/delete/:id', auth, async (req, res) => {
     try {
-        const { status, ...data} = await ticketService.remove(req.params.ids);
+        const { status, ...data} = await ticketService.remove(req.params.id);
         res.status(status).send(data);
     } catch (error) {
         res.status(500).send({ msgText: 'Something went wrong!'})
