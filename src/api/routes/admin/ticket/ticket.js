@@ -28,12 +28,16 @@ const ticketValidation = Joi.object({
     ticket_files: Joi.array().items({
         fileId: Joi.string().required(),
         url: Joi.string().required()
-    }).required(),
+    }),
     id: Joi.string()
 });
 
-router.post('/create', requestValidator(ticketValidation), async (req, res) => {
+router.post('/create', auth, fileUploads('ticket_files'), requestValidator(ticketValidation), async (req, res) => {
     try {
+        if (req.files.length) {
+            const files = await fileService.uploadFiles(req.files);
+            req.values.ticket_files = files
+        }
         const { status, ...data} = await ticketService.create(req.values);
         res.status(status).send(data);
     } catch (error) {
@@ -46,7 +50,7 @@ router.post('/create', requestValidator(ticketValidation), async (req, res) => {
 router.post('/uploadFiles', auth, fileUploads('files'), async (req, res) => {
     try {
         console.log("files", req.files)
-        if (req.files.length === 0){
+        if (!req.files){
             throw { status: 400, success: false, msgText: "file is required" }
         }
         const { status, ...data} = await fileService.uploadFiles(req.files);
@@ -110,9 +114,9 @@ router.post('/updateTicketStatus/:id', auth, requestValidator(ticketStatusValida
     }
 });
 
-router.post('/delete', auth, async (req, res) => {
+router.post('/delete/:id', auth, async (req, res) => {
     try {
-        const { status, ...data} = await ticketService.remove(req.body.ids);
+        const { status, ...data} = await ticketService.remove(req.params.ids);
         res.status(status).send(data);
     } catch (error) {
         res.status(500).send({ msgText: 'Something went wrong!'})

@@ -42,7 +42,7 @@ const userLoginValidation = Joi.object({
 
 router.post('/login', requestValidator(userLoginValidation),async (req, res) => {
     try {
-        const { status, ...data} = await userService.login(req.values);
+        const { status, ...data } = await userService.login(req.values);
         res.status(status).send(data);
     } catch (error) {
         logger('ADMIN_USER-CREATE-CONTROLLER').error(error);

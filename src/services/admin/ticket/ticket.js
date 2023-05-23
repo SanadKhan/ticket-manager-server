@@ -56,9 +56,9 @@ export const update = async (id, values) => {
     }
 };
 
-export const remove = async (ids) => {
+export const remove = async (id) => {
     try {
-        await Ticket.deleteMany({ "_id": { "$in": ids } });
+        await Ticket.findByIdAndDelete(id)
         return { status: 200, msgText: 'Deleted Successfully!', success: true }
     } catch (error) {
         throw error;
