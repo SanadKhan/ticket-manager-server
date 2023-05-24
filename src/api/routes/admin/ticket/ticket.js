@@ -87,8 +87,12 @@ router.get('/read/:id', auth, async (req, res)=> {
     }
 });
 
-router.post('/update/:id', auth, requestValidator(ticketValidation), async(req, res) => {
+router.post('/update/:id', auth, fileUploads('ticket_files'), requestValidator(ticketValidation), async(req, res) => {
     try {
+        if (req.files.length) {
+            const files = await fileService.uploadFiles(req.files);
+            req.values.ticket_files = files
+        }
         const { status, ...data} = await ticketService.update(req.params.id,req.values);
         res.status(status).send(data);
     } catch (error) {
