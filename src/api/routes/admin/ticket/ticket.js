@@ -29,6 +29,7 @@ const ticketValidation = Joi.object({
         fileId: Joi.string().required(),
         url: Joi.string().required()
     }),
+    deleted_img: Joi.array(),
     id: Joi.string()
 });
 

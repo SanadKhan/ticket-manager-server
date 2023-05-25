@@ -46,10 +46,34 @@ export const read = async (id) => {
 
 export const update = async (id, values) => {
     try {
-        const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
+        console.log("values", values);
+        const ticket = await Ticket.findById(id)
+            .populate([
+                { 'path': 'owner', 'select': ['name'] },
+                { 'path': 'assigned_to', 'select': ['name'] },
+            ]);
+        // const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
+        if (values.ticket_files) {
+            ticket.ticket_files.push.apply(ticket.ticket_files, values.ticket_files)
+        }
+        if (values.deleted_img) {
+            for (const deleteImg of values.deleted_img) {
+                const matchedIndex = ticket.ticket_files.findIndex(item => item.fileId === deleteImg)
+                if (matchedIndex !== -1) {
+                    ticket.ticket_files.splice(matchedIndex, 1)
+                }
+            }
+        }
+        ticket.title = values.title;
+        ticket.description = values.description;
+        ticket.owner = values.owner;
+        ticket.assinged_to = values.assinged_to;
+        ticket.status = values.status;
+        await ticket.save();
+
         return { status: 200, msgText: 'Updated Successfully! ', success: true, ticket }
     } catch (error) {
         throw error;
