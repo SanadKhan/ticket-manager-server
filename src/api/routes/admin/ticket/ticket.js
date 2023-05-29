@@ -57,7 +57,7 @@ router.post('/uploadFiles', auth, fileUploads('files'), async (req, res) => {
         const { status, ...data} = await fileService.uploadFiles(req.files);
         res.status(status).send(data);
     } catch (error) {
-        logger('ADMIN_TICKET-CREATE-CONTROLLER').error(error);
+        logger('ADMIN_TICKET-UPLOADFILES-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }
@@ -82,7 +82,7 @@ router.get('/read/:id', auth, async (req, res)=> {
         const { status, ...data} = await ticketService.read(req.params.id);
         res.status(status).send(data);
     } catch (error) {
-        logger('ADMIN_USER-READ-CONTROLLER').error(error);
+        logger('ADMIN_TICKET-READ-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }
@@ -97,7 +97,7 @@ router.post('/update/:id', auth, fileUploads('ticket_files'), requestValidator(t
         const { status, ...data} = await ticketService.update(req.params.id,req.values);
         res.status(status).send(data);
     } catch (error) {
-        logger('ADMIN_USER-UPDATE-CONTROLLER').error(error);
+        logger('ADMIN_TICKET-UPDATE-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }
@@ -110,10 +110,10 @@ const ticketStatusValidation = Joi.object({
 
 router.post('/updateTicketStatus/:id', auth, requestValidator(ticketStatusValidation), async(req, res) => {
     try {
-        const { status, ...data} = await ticketService.update(req.params.id,req.values);
+        const { status, ...data} = await ticketService.updateTicketStatus(req.params.id, req.values);
         res.status(status).send(data);
     } catch (error) {
-        logger('ADMIN_USER-UPDATE-CONTROLLER').error(error);
+        logger('ADMIN_TICKET-STATUSUPDATE-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }

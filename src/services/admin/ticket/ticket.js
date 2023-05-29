@@ -17,12 +17,12 @@ export const create = async (values) => {
 export const readAll = async ({ page, perPage, whereClause = {} }) => {
     try {
         const ticket = await Ticket.find(whereClause)
-            .populate([
-                { 'path': 'owner', 'select': ['name'] },
-                { 'path': 'assigned_to', 'select': ['name'] },
-            ])
             .sort({ _id: -1 }).skip(((perPage * page) - perPage))
             .limit(perPage);
+            // .populate([
+            //     { 'path': 'owner', 'select': ['name'] },
+            //     { 'path': 'assigned_to', 'select': ['name'] },
+            // ])
         if (!ticket.length > 0) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
@@ -46,12 +46,7 @@ export const read = async (id) => {
 
 export const update = async (id, values) => {
     try {
-        console.log("values", values);
         const ticket = await Ticket.findById(id)
-            .populate([
-                { 'path': 'owner', 'select': ['name'] },
-                { 'path': 'assigned_to', 'select': ['name'] },
-            ]);
         // const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
@@ -73,6 +68,18 @@ export const update = async (id, values) => {
         ticket.assinged_to = values.assinged_to;
         ticket.status = values.status;
         await ticket.save();
+
+        return { status: 200, msgText: 'Updated Successfully! ', success: true, ticket }
+    } catch (error) {
+        throw error;
+    }
+};
+export const updateTicketStatus = async (id, values) => {
+    try {
+        const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
+        if (!ticket) {
+            return { status: 404, msgText: "Ticket does not exists!", success: false }
+        }
 
         return { status: 200, msgText: 'Updated Successfully! ', success: true, ticket }
     } catch (error) {
