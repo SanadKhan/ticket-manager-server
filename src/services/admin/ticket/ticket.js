@@ -1,3 +1,4 @@
+import { fileService } from '../..';
 import { Ticket } from '../../../models';
 
 export const create = async (values) => {
@@ -19,10 +20,6 @@ export const readAll = async ({ page, perPage, whereClause = {} }) => {
         const ticket = await Ticket.find(whereClause)
             .sort({ _id: -1 }).skip(((perPage * page) - perPage))
             .limit(perPage);
-            // .populate([
-            //     { 'path': 'owner', 'select': ['name'] },
-            //     { 'path': 'assigned_to', 'select': ['name'] },
-            // ])
         if (!ticket.length > 0) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
@@ -58,9 +55,10 @@ export const update = async (id, values) => {
             for (const deleteImg of values.deleted_img) {
                 const matchedIndex = ticket.ticket_files.findIndex(item => item.fileId === deleteImg)
                 if (matchedIndex !== -1) {
-                    ticket.ticket_files.splice(matchedIndex, 1)
+                    ticket.ticket_files.splice(matchedIndex, 1);
                 }
             }
+            await fileService.deleteFiles(values.deleted_img);
         }
         ticket.title = values.title;
         ticket.description = values.description;
@@ -89,7 +87,16 @@ export const updateTicketStatus = async (id, values) => {
 
 export const remove = async (id) => {
     try {
+        let deleted_img=[]
         const ticket = await Ticket.findByIdAndDelete(id)
+        if (!ticket) {
+            return { status: 404, msgText: "Ticket does not exists!", success: false }
+        }
+        if (ticket.ticket_files) {
+            ticket.ticket_files.forEach(({ fileId }) => deleted_img.push(fileId));
+            await fileService.deleteFiles(deleted_img);
+        }
+        
         return { status: 200, msgText: 'Deleted Successfully!', success: true, ticket }
     } catch (error) {
         throw error;
