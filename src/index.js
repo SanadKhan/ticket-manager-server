@@ -1,22 +1,25 @@
 import express from 'express';
 import logger from './loaders/logger';
-import http from 'http';
 
 const startServer = () => {
     try{
         const app = express();
-        require('./loaders').default({app});
+        // require('./loaders').default({app});
     
-        const server = http.createServer(app);
         const PORT = process.env.PORT || 8000;
         
-        app.listen(PORT, () => {
+        const server = app.listen(PORT, () => {
             console.log(`
             ################################################
             Server listening on port: ${PORT}
             ################################################
             `);
         });
+        const sio = require('./loaders/socket');
+        console.log("executed firs");
+        sio.init(server)   // initialize local io module
+        require('./loaders').default({app});
+
     } catch(error) {
         logger('App').error(error);
     }

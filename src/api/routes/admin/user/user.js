@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { userService } from '../../../../services';
+import { userService, userSocketService } from '../../../../services';
 import { formatFormError } from '../../../../utils/helper';
 import Joi from 'joi';
 import logger from "../../../../loaders/logger";
 const router = new Router();
 import { auth, fileUploads, requestValidator } from '../../../middlewares';
+const io = require("../../../../loaders/socket").getIO();
 
 router.get('', async (req,res) => {
     try {
@@ -42,7 +43,21 @@ const userLoginValidation = Joi.object({
 
 router.post('/login', requestValidator(userLoginValidation),async (req, res) => {
     try {
+        console.log("inside login api")
+        io.on('connection', () => {
+            console.log("new websokcet connected!");
+            // userSocketService.addUser({ id: socket.id, username: req.values.email})
+            // console.log("after login useres", userSocketService.getAllUsers());
+        })
         const { status, ...data } = await userService.login(req.values);
+        // if (status === 200) {
+        //     console.log("success login", status)
+        //     io.on('connection', () => {
+        //         console.log("new websokcet connected!");
+        //         // userSocketService.addUser({ id: socket.id, username: req.values.email})
+        //         // console.log("after login useres", userSocketService.getAllUsers());
+        //     })
+        // }
         res.status(status).send(data);
     } catch (error) {
         logger('ADMIN_USER-CREATE-CONTROLLER').error(error);
@@ -107,6 +122,8 @@ router.post('/logout', auth, async (req, res) => {
             return token.token !== req.token;
         });
         await req.user.save();
+        userSocketService.removeUser(req.user.email);
+        console.log("after logout useres", userSocketService.getAllUsers());
         res.send({msgText: 'Successfully Logged Out!'});
     } catch (error) {
         logger('ADMIN_USER-LOGOUT-CONTROLLER').error(error);

@@ -1,4 +1,3 @@
-// const socketio = require('socket.io');
 import socketio from "socket.io";
 
 let io;
@@ -16,10 +15,19 @@ let io;
 //     }
 // }
 
+// export const init = (server) => {
+//     io = socketio(server);
+//     return io;
+// }
+
+// export const getIO = () => {
+//     if (!io) throw new Error("Can't get io instance before calling .init()")
+//     return io;
+// }
 
 module.exports = {
    init: function(server) {
-       io = socketio(server);
+       io = socketio(server, { cors: { origin: '*' }});
        return io;
    },
    getIO: function() {
