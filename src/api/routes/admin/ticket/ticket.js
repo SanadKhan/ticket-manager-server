@@ -90,6 +90,7 @@ router.get('/read/:id', auth, async (req, res)=> {
 
 router.post('/update/:id', auth, fileUploads('ticket_files'), requestValidator(ticketValidation), async(req, res) => {
     try {
+        console.log("values from update", req.values);
         if (req.files.length) {
             const files = await fileService.uploadFiles(req.files);
             req.values.ticket_files = files

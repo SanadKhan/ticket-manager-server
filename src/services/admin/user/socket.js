@@ -27,7 +27,7 @@ export const addUser = ({ id, username }) => {
     //Store the user
     const user = { id, username }
     users.push(user)
-    console.log(users);
+    console.log("from socket user add", users);
     return { user }
 }
 

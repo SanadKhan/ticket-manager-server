@@ -1,8 +1,9 @@
 import { User } from '../../../models';
 import bcrypt from 'bcryptjs';
-import { emailService } from '../..';
+import { emailService, userSocketService } from '../..';
 import config from '../../../config';
 import { sign } from 'jsonwebtoken';
+const io = require("../../../loaders/socket").getIO();
 
 export const create = async(values) => {
     try {
@@ -32,6 +33,11 @@ export const login = async(values) => {
         if(!isMatch){
             return { status: 401 , msgText: "Wrong credentials, unable to login!" ,success: false }
         }
+        io.on('connection', (socket) => {
+            console.log("new websokcet connected! from login service");
+            userSocketService.addUser({ id: socket.id, username: user.email})
+            console.log("after login useres", userSocketService.getAllUsers());
+        });
         const token = await user.generateAuthToken();  
         return { status: 200, msgText: 'Logged In Successfully! ',
         success: true, user, token}

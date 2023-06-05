@@ -23,7 +23,9 @@ export const readAll = async ({ page, perPage, whereClause = {} }) => {
         if (!ticket.length > 0) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
-        return { status: 200, success: true, ticket }
+        const ticketCount = await Ticket.find({}).count();
+        const totalPages = Math.ceil(ticketCount / perPage);
+        return { status: 200, success: true, totalPages: ticketCount , ticket }
     } catch (error) {
         throw error;
     }
@@ -63,7 +65,7 @@ export const update = async (id, values) => {
         ticket.title = values.title;
         ticket.description = values.description;
         ticket.owner = values.owner;
-        ticket.assinged_to = values.assinged_to;
+        ticket.assigned_to = values.assigned_to;
         ticket.status = values.status;
         await ticket.save();
 
