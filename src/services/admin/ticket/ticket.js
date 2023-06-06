@@ -23,9 +23,9 @@ export const readAll = async ({ page, perPage, whereClause = {} }) => {
         if (!ticket.length > 0) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
-        const ticketCount = await Ticket.find({}).count();
-        const totalPages = Math.ceil(ticketCount / perPage);
-        return { status: 200, success: true, totalPages: ticketCount , ticket }
+        const ticketRecords = await Ticket.find(whereClause).count();
+        // const totalPages = Math.ceil(ticketCount / perPage);
+        return { status: 200, success: true, ticketRecords , ticket }
     } catch (error) {
         throw error;
     }
@@ -94,7 +94,7 @@ export const remove = async (id) => {
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
-        if (ticket.ticket_files) {
+        if (ticket.ticket_files.length) {
             ticket.ticket_files.forEach(({ fileId }) => deleted_img.push(fileId));
             await fileService.deleteFiles(deleted_img);
         }

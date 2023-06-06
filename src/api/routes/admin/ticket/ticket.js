@@ -19,6 +19,34 @@ router.get('', auth, async (req,res) => {
     }
 });
 
+router.get('/assignedTicket/:id', auth, async (req,res) => {
+    try {
+        const page = parseInt(req.query.p) || 1;
+        const perPage = parseInt(req.query.r) || 10;
+        const whereClause = { assigned_to: req.params.id }
+        const { status, ...data} = await ticketService.readAll({ page, perPage, whereClause })
+        res.status(status).send(data);
+    } catch (error) {
+        logger('ADMIN_ASSIGNEDTICKET-READALL-CONTROLLER').error(error);
+        const { status, ...data } = formatFormError(error);
+        res.status(status).send(data);
+    }
+});
+
+router.get('/createdTicket/:id', auth, async (req,res) => {
+    try {
+        const page = parseInt(req.query.p) || 1;
+        const perPage = parseInt(req.query.r) || 10;
+        const whereClause = { owner : req.params.id }
+        const { status, ...data} = await ticketService.readAll({ page, perPage, whereClause })
+        res.status(status).send(data);
+    } catch (error) {
+        logger('ADMIN_CREATEDTICKET-READALL-CONTROLLER').error(error);
+        const { status, ...data } = formatFormError(error);
+        res.status(status).send(data);
+    }
+});
+
 const ticketValidation = Joi.object({
     title: Joi.string().min(3).required().trim(),
     description: Joi.string().min(3).required().trim(),
@@ -125,7 +153,8 @@ router.post('/delete/:id', auth, async (req, res) => {
         const { status, ...data} = await ticketService.remove(req.params.id);
         res.status(status).send(data);
     } catch (error) {
-        res.status(500).send({ msgText: 'Something went wrong!'})
+        res.status(500).send({ msgText: 'Something went wrong!' })
+        console.log("DELETE_API_ERROR", error);
     }
 });
 
