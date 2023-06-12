@@ -6,42 +6,21 @@ import logger from "../../../../loaders/logger";
 const router = new Router();
 import { auth, fileUploads, requestValidator } from '../../../middlewares';
 
-router.get('', auth, async (req,res) => {
+const readAllTicketValidation = Joi.object({
+    ticketType: Joi.string().valid('all', 'assigned', 'created').required(),
+    p: Joi.number(),
+    r: Joi.number()
+})
+router.post('', auth, requestValidator(readAllTicketValidation), async (req,res) => {
     try {
         const page = parseInt(req.query.p) || 1
-        const perPage = parseInt (req.query.r) || 10
-        const { status, ...data} = await ticketService.readAll({ page, perPage })
+        const perPage = parseInt(req.query.r) || 10
+        const filters = req.values.ticketType
+        const userId = req.user._id
+        const { status, ...data} = await ticketService.readAll({ page, perPage, filters, userId })
         res.status(status).send(data);
     } catch (error) {
         logger('ADMIN_TICKET-READALL-CONTROLLER').error(error);
-        const { status, ...data } = formatFormError(error);
-        res.status(status).send(data);
-    }
-});
-
-router.get('/assignedTicket/:id', auth, async (req,res) => {
-    try {
-        const page = parseInt(req.query.p) || 1;
-        const perPage = parseInt(req.query.r) || 10;
-        const whereClause = { assigned_to: req.params.id }
-        const { status, ...data} = await ticketService.readAll({ page, perPage, whereClause })
-        res.status(status).send(data);
-    } catch (error) {
-        logger('ADMIN_ASSIGNEDTICKET-READALL-CONTROLLER').error(error);
-        const { status, ...data } = formatFormError(error);
-        res.status(status).send(data);
-    }
-});
-
-router.get('/createdTicket/:id', auth, async (req,res) => {
-    try {
-        const page = parseInt(req.query.p) || 1;
-        const perPage = parseInt(req.query.r) || 10;
-        const whereClause = { owner : req.params.id }
-        const { status, ...data} = await ticketService.readAll({ page, perPage, whereClause })
-        res.status(status).send(data);
-    } catch (error) {
-        logger('ADMIN_CREATEDTICKET-READALL-CONTROLLER').error(error);
         const { status, ...data } = formatFormError(error);
         res.status(status).send(data);
     }
@@ -118,7 +97,6 @@ router.get('/read/:id', auth, async (req, res)=> {
 
 router.post('/update/:id', auth, fileUploads('ticket_files'), requestValidator(ticketValidation), async(req, res) => {
     try {
-        console.log("values from update", req.values);
         if (req.files.length) {
             const files = await fileService.uploadFiles(req.files);
             req.values.ticket_files = files

@@ -15,8 +15,16 @@ export const create = async (values) => {
     }
 };
 
-export const readAll = async ({ page, perPage, whereClause = {} }) => {
+export const readAll = async ({ page, perPage, filters, userId }) => {
     try {
+        let whereClause;
+        if (filters === 'created') {
+            whereClause = { owner: userId }
+        } else if (filters === 'assigned') {
+            whereClause = { assigned_to: userId }
+        } else {
+            whereClause = {}
+        }
         const ticket = await Ticket.find(whereClause)
             .sort({ _id: -1 }).skip(((perPage * page) - perPage))
             .limit(perPage);
@@ -24,8 +32,7 @@ export const readAll = async ({ page, perPage, whereClause = {} }) => {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
         const ticketRecords = await Ticket.find(whereClause).count();
-        // const totalPages = Math.ceil(ticketCount / perPage);
-        return { status: 200, success: true, ticketRecords , ticket }
+        return { status: 200, success: true, ticketRecords, ticket }
     } catch (error) {
         throw error;
     }
@@ -46,7 +53,6 @@ export const read = async (id) => {
 export const update = async (id, values) => {
     try {
         const ticket = await Ticket.findById(id)
-        // const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
@@ -76,7 +82,7 @@ export const update = async (id, values) => {
 };
 export const updateTicketStatus = async (id, values) => {
     try {
-        const ticket = await Ticket.findByIdAndUpdate(id, values , { returnDocument: true });
+        const ticket = await Ticket.findByIdAndUpdate(id, values, { returnDocument: true });
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
@@ -89,7 +95,7 @@ export const updateTicketStatus = async (id, values) => {
 
 export const remove = async (id) => {
     try {
-        let deleted_img=[]
+        let deleted_img = []
         const ticket = await Ticket.findByIdAndDelete(id)
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
@@ -98,7 +104,7 @@ export const remove = async (id) => {
             ticket.ticket_files.forEach(({ fileId }) => deleted_img.push(fileId));
             await fileService.deleteFiles(deleted_img);
         }
-        
+
         return { status: 200, msgText: 'Deleted Successfully!', success: true, ticket }
     } catch (error) {
         throw error;
