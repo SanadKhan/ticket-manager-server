@@ -33,10 +33,9 @@ export const login = async(values) => {
         if(!isMatch){
             return { status: 401 , msgText: "Wrong credentials, unable to login!" ,success: false }
         }
-        io.on('connection', (socket) => {
+        io.on('connection', async(socket) => {
             console.log("new websokcet connected! from login service");
-            userSocketService.addUser({ id: socket.id, username: user.email})
-            console.log("after login useres", userSocketService.getAllUsers());
+            await update(user._id, { socketId: socket.id });
         });
         const token = await user.generateAuthToken();  
         return { status: 200, msgText: 'Logged In Successfully! ',

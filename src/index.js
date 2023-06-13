@@ -16,7 +16,6 @@ const startServer = () => {
             `);
         });
         const sio = require('./loaders/socket');
-        console.log("executed firs");
         sio.init(server)   // initialize local io module
         require('./loaders').default({app});
 

@@ -29,6 +29,9 @@ const userSchema = new Schema({
             required: true
         }
     }],
+    socketId: {
+        type: String
+    },
     active : {
         type: Boolean,
         default : true

@@ -1,11 +1,15 @@
-import { fileService } from '../..';
+import { fileService, userService } from '../..';
 import { Ticket } from '../../../models';
+const io = require("../../../loaders/socket").getIO();
 
 export const create = async (values) => {
     try {
         const ticket = new Ticket(values);
         await ticket.save();
         // emailService.sendWelcomeEmail(ticket.email, ticket.name, values.password);
+        const { user } = await userService.read(ticket.assigned_to);
+        console.log("user from created tickets", user);
+        io.to(user.socketId).emit("message","'New Ticket has been assigned!")
         return {
             status: 201, msgText: 'Created Successfully! ',
             success: true, ticket

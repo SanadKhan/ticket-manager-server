@@ -1,6 +1,6 @@
 import socketio from "socket.io";
 
-let io;
+let io=null;
 
 // const sio  = {
 //     init: function(server) {
@@ -26,16 +26,22 @@ let io;
 // }
 
 module.exports = {
-   init: function(server) {
-       io = socketio(server, { cors: { origin: '*' }});
-       return io;
-   },
-   getIO: function() {
+    init: function(server) {
+        io = socketio(server, { cors: { origin: '*' }});
+        return io;
+    },
+    getIO: function() {
        if (!io) {
           throw new Error("Can't get io instance before calling .init()");
        }
        return io;
-   }
+    },
+    removeIO: function () {
+        if (io) {
+            io.disconnect();
+            io=null
+        }
+    }
 }
 
 // https://stackoverflow.com/questions/70724492/implement-socket-io-in-node-js-application-controller
