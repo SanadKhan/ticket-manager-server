@@ -109,6 +109,7 @@ router.post('/logout', auth, async (req, res) => {
             return token.token !== req.token;
         });
         await req.user.save();
+        io.close(); //  close socket connection
         // io.on('connection');
         // console.log("from logout user", req.user.email)
         // userSocketService.removeUser(req.user.email);

@@ -8,8 +8,8 @@ export const create = async (values) => {
         await ticket.save();
         // emailService.sendWelcomeEmail(ticket.email, ticket.name, values.password);
         const { user } = await userService.read(ticket.assigned_to);
-        console.log("user from created tickets", user);
-        io.to(user.socketId).emit("message","'New Ticket has been assigned!")
+        console.log("user from created tickets", user.name, user.socketId);
+        io.to(user.socketId).emit("message","New Ticket has been assigned!")
         return {
             status: 201, msgText: 'Created Successfully! ',
             success: true, ticket
@@ -56,7 +56,9 @@ export const read = async (id) => {
 
 export const update = async (id, values) => {
     try {
-        const ticket = await Ticket.findById(id)
+        const ticket = await Ticket.findById(id);
+        const { assigned_to } = ticket; 
+        // console.log("ticket vlaues before", ticket);
         if (!ticket) {
             return { status: 404, msgText: "Ticket does not exists!", success: false }
         }
@@ -78,7 +80,15 @@ export const update = async (id, values) => {
         ticket.assigned_to = values.assigned_to;
         ticket.status = values.status;
         await ticket.save();
-
+        // console.log("ticket values after update", ticket);
+        // console.log("assigned to ", assigned_to);
+        // console.log("values asigned from payload to ", values.assigned_to);
+        // console.log("assigned to ", assigned_to.toString());
+        // if (assigned_to.toString() !== values.assigned_to) {
+        //     const { user } = await userService.read(ticket.assigned_to);
+        //     console.log("user update tickets", user.name, user.socketId);
+        //     io.to(user.socketId).emit("message","New Ticket has been assigned!")
+        // }
         return { status: 200, msgText: 'Updated Successfully! ', success: true, ticket }
     } catch (error) {
         throw error;

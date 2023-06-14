@@ -35,12 +35,6 @@ module.exports = {
           throw new Error("Can't get io instance before calling .init()");
        }
        return io;
-    },
-    removeIO: function () {
-        if (io) {
-            io.disconnect();
-            io=null
-        }
     }
 }
 
