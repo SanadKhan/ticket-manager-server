@@ -5,8 +5,6 @@ import Joi from 'joi';
 import logger from "../../../../loaders/logger";
 const router = new Router();
 import { auth, fileUploads, requestValidator } from '../../../middlewares';
-// const io = require("../../../../loaders/socket");
-const io = require("../../../../loaders/socket").getIO();
 
 router.get('', async (req,res) => {
     try {
@@ -109,11 +107,6 @@ router.post('/logout', auth, async (req, res) => {
             return token.token !== req.token;
         });
         await req.user.save();
-        io.close(); //  close socket connection
-        // io.on('connection');
-        // console.log("from logout user", req.user.email)
-        // userSocketService.removeUser(req.user.email);
-        // console.log("after logout users", userSocketService.getAllUsers());
         res.send({msgText: 'Successfully Logged Out!'});
     } catch (error) {
         logger('ADMIN_USER-LOGOUT-CONTROLLER').error(error);
