@@ -53,8 +53,7 @@ router.post('/login', requestValidator(userLoginValidation),async (req, res) => 
 
 router.get('/read/:id', auth, async (req, res)=> {
     try {
-        const _id = req.params.id;
-        const { status, ...data} = await userService.read({whereClause:{_id}});
+        const { status, ...data} = await userService.read(req.params.id);
         res.status(status).send(data);
     } catch (error) {
         logger('ADMIN_USER-READ-CONTROLLER').error(error);
