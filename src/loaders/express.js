@@ -17,7 +17,7 @@ export default ({app}) => {
         };
     }
 
-    const whitelist = [config.clientbaseUrl,"https://ticket-manager-rouge.vercel.app"];
+    const whitelist = [config.clientbaseUrl];
     
     var corsOptions = {
         credentials: true,
