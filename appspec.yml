@@ -1,9 +1,0 @@
-version: 0.0
-os: linux
-files:
-  - source: /
-    destination: /home/ec2-user/workspace/bbe-dev
-hooks:
-  AfterInstall:
-    - location: scripts/start.sh
-      runas: ec2-user
